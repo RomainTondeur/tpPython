@@ -46,8 +46,19 @@ def randGraph():
 	matToLst()
 
 
-def varianteBellmanFord():
-	
+#def varianteBellmanFord():
+
+
+#def naiveDijkstra():
+
+
+#def prioDijkstra():
+
+
+#def compaDijkstra():
+
+
+#def johnson():
 
 
 def main():
