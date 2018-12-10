@@ -46,6 +46,10 @@ def randGraph():
 	matToLst()
 
 
+def varianteBellmanFord():
+	
+
+
 def main():
 	global nSom
 	global mArc
