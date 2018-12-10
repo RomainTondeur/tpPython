@@ -49,7 +49,12 @@ def randGraph():
 #def varianteBellmanFord():
 
 
-#def naiveDijkstra():
+#Procédure naïve de Dijkstra
+def naiveDijkstra():
+	p = 0
+	v = 0
+	M = nSom
+
 
 
 #def prioDijkstra():
