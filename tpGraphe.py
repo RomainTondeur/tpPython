@@ -17,14 +17,36 @@ lstAdj = [[], []]
 def matToLst():
 	global lstAdj
 
-	for som in matAdj:
-		fstSucc = 1
-		for suc in som:
-			if suc is not 0:
-				lstAdj[1].append(suc)
-				if fstSucc:
-					lstAdj[0].append(len(lstAdj[1]) - 1)
-					fstSucc = 0
+	# Nombre total de successeurs (indice du dernier successeur connu)
+	nbFils = -1
+
+	# Pour chaque liste de successeurs d'un sommet
+	for lstFils in matAdj:
+
+		premFils = 1
+		for indFils in range(len(lstFils)):
+
+			# S'il existe un arc pour ce sommet -> successeur
+			if lstFils[indFils] is not 0:
+
+				# On ajoute l'indice du successeur à la liste des successeurs
+				lstAdj[1].append(indFils)
+
+				# On incrémente le nombre total de successeurs
+				nbFils += 1
+
+				# Si le successeur est le premier de ce sommet
+				if premFils:
+
+					# On ajoute son indice à la liste des têtes
+					lstAdj[0].append(nbFils)
+					premFils = 0
+
+		# Si aucun arc n'existe pour ce sommet
+		if premFils:
+
+			# On ajoute l'indice du prochain successeur à la liste des têtes
+			lstAdj[0].append(nbFils + 1)
 
 
 # Procédure de génération de graphe
@@ -46,36 +68,33 @@ def randGraph():
 	matToLst()
 
 
-#def varianteBellmanFord():
+# def varianteBellmanFord():
 
 
-#Procédure naïve de Dijkstra
+# Procédure naïve de Dijkstra
 def naiveDijkstra():
 	p = 0
 	v = 0
 	M = nSom
 
 
-
-#def prioDijkstra():
-
-
-#def compaDijkstra():
+# def prioDijkstra():
 
 
-#def johnson():
+# def compaDijkstra():
+
+
+# def johnson():
 
 
 def main():
 	global nSom
 	global mArc
 
-	inpUt = False
-
-	while not inpUt:
+	while True:
 		nSom = int(input("Saisissez N (nombre de sommets): "))
 		mArc = int(input("Saisissez M (nombre d'arcs)    : "))
-		if mArc <= nSom * (nSom - 1):
+		if (mArc <= nSom * (nSom - 1)) and (mArc > 0):
 			break
 		print("Erreur: Nombre d'arcs trop important")
 
@@ -85,5 +104,6 @@ def main():
 	pprint.pprint(matAdj)
 
 	print("\nListe d'adjacence:\n[" + str(lstAdj[0]) + ",\n " + str(lstAdj[1]) + "]")
+
 
 main()
