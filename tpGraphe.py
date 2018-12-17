@@ -3,7 +3,7 @@
 import random
 import math
 import heapq
-import pprint
+import time
 
 
 def initMain():
@@ -123,7 +123,7 @@ def bellmanFord(liste, indSommet):
                     # Recherche d'absorbsion
                     if meilDistance[indSom] + successeur[1] < meilDistance[successeur[0]]:
                         meilDistance[successeur[0]] = -math.inf
-                        print("\nErreur: Circuit absorbant détecté")
+                        print("\nAttention: Circuit absorbant détecté")
                         return meilDistance
 
     return meilDistance
@@ -150,13 +150,11 @@ def naiveDijkstra(liste, indSommet):
         tasBinaire.pop(tasBinaire.index(minimum(tasBinaire)))
         visite[index] = 1
         fils = lstFilsSommet(liste, index)
-        print(fils)
         if len(fils) > 0:
             for successeur in fils:
                 if visite[successeur[0]]:
                     break
                 if meilDistance[index] + successeur[1] < meilDistance[successeur[0]]:
-                    print("peut être")
                     meilDistance[successeur[0]] = meilDistance[index] + successeur[1]
                     tasBinaire.append([successeur[0], meilDistance[index] + successeur[1]])
     return meilDistance
@@ -184,47 +182,97 @@ def prioDijkstra(liste, indSommet):
     return meilDistance
 
 
-# def compaDijkstra():
+def johnson(liste, nbArcs):
+    for ind in range(len(liste[0])):
+        liste[1].append([ind, 0])
+    liste[0].append(nbArcs)
 
+    bellDistance = bellmanFord(liste, len(liste[0]) - 1)
 
-# def johnson():
+    for index in range(len(liste[0])):
+        fils = lstFilsSommet(liste, index)
+
+        if len(fils) > 0:
+            for successeur in fils:
+                liste[1][liste[0][index]][1] = liste[1][liste[0][index]][1] + bellDistance[index] - bellDistance[liste[1][liste[0][index]][0]]
+
+    liste[1] = liste[1][:(-(len(liste[1])-nbArcs)-1)]
+    liste[0] = liste[0][:-1]
+
+    meilDistance = [[] for _ in range(len(liste[0]))]
+
+    for ind in range(len(liste[0])):
+        meilDistance[ind] = prioDijkstra(liste, ind)
+
+    for indx in range(len(liste[0])):
+        for indy in range(len(liste[0])):
+            meilDistance[indx][indy] += bellDistance[indy] - bellDistance[indx]
+
+    for index in range(len(liste[0])):
+        fils = lstFilsSommet(liste, index)
+
+        if len(fils) > 0:
+            for successeur in fils:
+                liste[1][liste[0][index]][1] = liste[1][liste[0][index]][1] + bellDistance[liste[1][liste[0][index]][0]] - bellDistance[index]
+
+    return meilDistance
 
 
 def main():
     # Nombre de sommets et d'arcs
-    nbSommet, nbArc, minPond, maxPond, indSommet = initMain()
+    nbSommets, nbArcs, minPond, maxPond, indSommet = initMain()
 
     # Matrice d'adjacence
-    matriceAdjacence = randGraph(nbSommet, nbArc, minPond, maxPond)
+    matriceAdjacence = randGraph(nbSommets, nbArcs, minPond, maxPond)
 
-    print("\nMatrice d'adjacence:")
-    pprint.pprint(matriceAdjacence)
+    # print("\nMatrice d'adjacence:")
+    # pprint.pprint(matriceAdjacence)
 
     # Liste d'adjacence
     listeAdjacence = matToLst(matriceAdjacence)
 
     print("\nListe d'adjacence:\n[" + str(listeAdjacence[0]) + ",\n " + str(listeAdjacence[1]) + "]")
 
-    print("\nListe des successeurs du sommet " + str(indSommet) + ":")
-    pprint.pprint(lstFilsSommet(listeAdjacence, indSommet))
+    # print("\nListe des successeurs du sommet " + str(indSommet) + ":")
+    # pprint.pprint(lstFilsSommet(listeAdjacence, indSommet))
+
+    tempsExec = int(time.time()*1000)
 
     # Liste des coûts en distance pour le sommet indSommet
     lstDistBell = bellmanFord(listeAdjacence, indSommet)
 
-    print("\nBellman-Ford - Sommet " + str(indSommet) + ":")
-    pprint.pprint(lstDistBell)
+    tempsExec = int(time.time()*1000) - tempsExec
+
+    print("\nBellman-Ford - Sommet " + str(indSommet) + " | " + str(tempsExec) + " ms")
+    #pprint.pprint(lstDistBell)
+
+    tempsExec = int(time.time()*1000)
 
     # Liste des coûts en distance pour le sommet indSommet
     lstDistDijNa = naiveDijkstra(listeAdjacence, indSommet)
 
-    print("\nDijkstra Naïf - Sommet " + str(indSommet) + ":")
-    pprint.pprint(lstDistDijNa)
+    tempsExec = int(time.time()*1000) - tempsExec
+
+    print("\nDijkstra Naïf - Sommet " + str(indSommet) + " | " + str(tempsExec) + " ms")
+    #pprint.pprint(lstDistDijNa)
+
+    tempsExec = int(time.time()*1000)
 
     # Liste des coûts en distance pour le sommet indSommet
     lstDistDijPrio = prioDijkstra(listeAdjacence, indSommet)
 
-    print("\nDijkstra Prioritaire - Sommet " + str(indSommet) + ":")
-    pprint.pprint(lstDistDijPrio)
+    tempsExec = int(time.time()*1000) - tempsExec
 
+    print("\nDijkstra Prioritaire - Sommet " + str(indSommet) + " | " + str(tempsExec) + " ms")
+    #pprint.pprint(lstDistDijPrio)
+
+    tempsExec = int(time.time()*1000)
+
+    #
+    lstDistJohn = johnson(listeAdjacence, nbArcs)
+
+    tempsExec = int(time.time()*1000) - tempsExec
+
+    print("\nJohnson | " + str(tempsExec) + " ms")
 
 main()
